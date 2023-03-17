@@ -5,12 +5,14 @@ import sys
 import time
 
 # Import nacl libs
-import libnacl
+
 import libnacl.high_level.encode
 import libnacl.high_level.secret
 import libnacl.high_level.public
 import libnacl.high_level.sign
 import libnacl.high_level.dual
+from libnacl.bindings.constants import crypto_secretbox_KEYBYTES, crypto_aead_aes256gcm_KEYBYTES, crypto_aead_aes256gcm_NPUBBYTES, crypto_box_NONCEBYTES
+import libnacl.bindings.random_byte_generation as rbg
 
 
 def load_key(path_or_file, serial='json'):
@@ -42,22 +44,22 @@ def load_key(path_or_file, serial='json'):
 
     if 'priv' in key_data and 'sign' in key_data and 'pub' in key_data:
         return libnacl.high_level.dual.DualSecret(
-                libnacl.high_level.encode.hex_decode(key_data['priv']),
-                libnacl.high_level.encode.hex_decode(key_data['sign']))
+            libnacl.high_level.encode.hex_decode(key_data['priv']),
+            libnacl.high_level.encode.hex_decode(key_data['sign']))
     elif 'priv' in key_data and 'pub' in key_data:
         return libnacl.high_level.public.SecretKey(
-                libnacl.high_level.encode.hex_decode(key_data['priv']))
+            libnacl.high_level.encode.hex_decode(key_data['priv']))
     elif 'sign' in key_data:
         return libnacl.high_level.sign.Signer(
-                libnacl.high_level.encode.hex_decode(key_data['sign']))
+            libnacl.high_level.encode.hex_decode(key_data['sign']))
     elif 'pub' in key_data:
         return libnacl.high_level.public.PublicKey(
-                libnacl.high_level.encode.hex_decode(key_data['pub']))
+            libnacl.high_level.encode.hex_decode(key_data['pub']))
     elif 'verify' in key_data:
         return libnacl.high_level.sign.Verifier(key_data['verify'])
     elif 'priv' in key_data:
         return libnacl.high_level.secret.SecretBox(
-                libnacl.high_level.encode.hex_decode(key_data['priv']))
+            libnacl.high_level.encode.hex_decode(key_data['priv']))
     raise ValueError('Found no key data')
 
 
@@ -65,14 +67,14 @@ def salsa_key():
     '''
     Generates a salsa2020 key
     '''
-    return libnacl.high_level.randombytes(libnacl.high_level.crypto_secretbox_KEYBYTES)
+    return rbg.randombytes(crypto_secretbox_KEYBYTES)
 
 
 def aead_key():
     '''
     Generates an AEAD key (both implementations use the same size)
     '''
-    return libnacl.high_level.randombytes(libnacl.high_level.crypto_aead_aes256gcm_KEYBYTES)
+    return rbg.randombytes(crypto_aead_aes256gcm_KEYBYTES)
 
 
 def rand_aead_nonce():
@@ -80,7 +82,7 @@ def rand_aead_nonce():
     Generates and returns a random bytestring of the size defined in libsodium
     as crypto_aead_aes256gcm_NPUBBYTES and crypto_aead_chacha20poly1305_ietf_NPUBBYTES
     '''
-    return libnacl.high_level.randombytes(libnacl.high_level.crypto_aead_aes256gcm_NPUBBYTES)
+    return rbg.randombytes(crypto_aead_aes256gcm_NPUBBYTES)
 
 
 def rand_nonce():
@@ -88,7 +90,7 @@ def rand_nonce():
     Generates and returns a random bytestring of the size defined in libsodium
     as crypto_box_NONCEBYTES
     '''
-    return libnacl.high_level.randombytes(libnacl.high_level.crypto_box_NONCEBYTES)
+    return rbg.randombytes(crypto_box_NONCEBYTES)
 
 
 def time_nonce():
