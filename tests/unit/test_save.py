@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Import libnacl libs
-import libnacl.dual
-import libnacl.secret
-import libnacl.sign
-import libnacl.utils
+import libnacl.high_level.dual
+import libnacl.high_level.secret
+import libnacl.high_level.sign
+import libnacl.high_level.utils
 
 # Import pythonlibs
 import os
@@ -12,27 +12,29 @@ import unittest
 import tempfile
 import sys
 
+
 class TestSave(unittest.TestCase):
     '''
     '''
+
     def test_save_load(self):
         msg = b'then leap out of the rabbit, taking the French by surprise'
-        bob = libnacl.dual.DualSecret()
-        alice = libnacl.dual.DualSecret()
+        bob = libnacl.high_level.dual.DualSecret()
+        alice = libnacl.high_level.dual.DualSecret()
         fh_, bob_path = tempfile.mkstemp()
         os.close(fh_)
         fh_, alice_path = tempfile.mkstemp()
         os.close(fh_)
         bob.save(bob_path)
         alice.save(alice_path)
-        bob_box = libnacl.public.Box(bob, alice.pk)
-        alice_box = libnacl.public.Box(alice, bob.pk)
+        bob_box = libnacl.high_level.public.Box(bob, alice.pk)
+        alice_box = libnacl.high_level.public.Box(alice, bob.pk)
         bob_enc = bob_box.encrypt(msg)
         alice_enc = alice_box.encrypt(msg)
-        bob_load = libnacl.utils.load_key(bob_path)
-        alice_load = libnacl.utils.load_key(alice_path)
-        bob_load_box = libnacl.public.Box(bob_load, alice_load.pk)
-        alice_load_box = libnacl.public.Box(alice_load, bob_load.pk)
+        bob_load = libnacl.high_level.utils.load_key(bob_path)
+        alice_load = libnacl.high_level.utils.load_key(alice_path)
+        bob_load_box = libnacl.high_level.public.Box(bob_load, alice_load.pk)
+        alice_load_box = libnacl.high_level.public.Box(alice_load, bob_load.pk)
         self.assertEqual(bob.sk, bob_load.sk)
         self.assertEqual(bob.pk, bob_load.pk)
         self.assertEqual(bob.vk, bob_load.vk)
@@ -46,7 +48,7 @@ class TestSave(unittest.TestCase):
         self.assertEqual(bob_dec, msg)
         self.assertEqual(alice_dec, msg)
 
-        bob2 = libnacl.utils.load_key(bob_path)
+        bob2 = libnacl.high_level.utils.load_key(bob_path)
         self.assertEqual(bob.sk, bob2.sk)
         self.assertEqual(bob.pk, bob2.pk)
         self.assertEqual(bob.vk, bob2.vk)
@@ -56,29 +58,29 @@ class TestSave(unittest.TestCase):
 
     def test_save_load_secret(self):
         msg = b'then leap out of the rabbit, taking the French by surprise'
-        box = libnacl.secret.SecretBox()
+        box = libnacl.high_level.secret.SecretBox()
         fh_, box_path = tempfile.mkstemp()
         os.close(fh_)
         box.save(box_path)
-        lbox = libnacl.utils.load_key(box_path)
+        lbox = libnacl.high_level.utils.load_key(box_path)
         ctxt = box.encrypt(msg)
         out_msg = lbox.decrypt(ctxt)
         self.assertEqual(msg, out_msg)
 
     def test_save_load_sign(self):
         msg = b'then leap out of the rabbit, taking the French by surprise'
-        signer = libnacl.sign.Signer()
+        signer = libnacl.high_level.sign.Signer()
         fh_, sign_path = tempfile.mkstemp()
         os.close(fh_)
         signer.save(sign_path)
-        signer_load = libnacl.utils.load_key(sign_path)
+        signer_load = libnacl.high_level.utils.load_key(sign_path)
         signed1 = signer.sign(msg)
         signed2 = signer_load.sign(msg)
         self.assertEqual(signed1, signed2)
         os.remove(sign_path)
 
     def test_save_perms(self):
-        bob = libnacl.dual.DualSecret()
+        bob = libnacl.high_level.dual.DualSecret()
         fh_, bob_path = tempfile.mkstemp()
         os.close(fh_)
         bob.save(bob_path)
