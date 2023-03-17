@@ -1,6 +1,13 @@
 import ctypes
 from libnacl import nacl
-from constants import *
+from libnacl.bindings.constants import (
+    crypto_sign_PUBLICKEYBYTES,
+    crypto_sign_BYTES,
+    crypto_sign_SECRETKEYBYTES,
+    crypto_sign_ed25519_PUBLICKEYBYTES,
+    crypto_sign_ed25519_SECRETKEYBYTES,
+    crypto_sign_SEEDBYTES,
+)
 from exceptions import CryptError
 
 #  Signing functions

@@ -1,6 +1,3 @@
-from constants import *
-
-
 #  Define exceptions
 class CryptError(Exception):
     """

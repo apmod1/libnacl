@@ -1,6 +1,10 @@
 import ctypes
 from libnacl import nacl
-from constants import *
+from libnacl.bindings.constants import (
+    crypto_onetimeauth_KEYBYTES,
+    crypto_onetimeauth_BYTES,
+)
+
 #  One time authentication
 
 

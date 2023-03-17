@@ -1,6 +1,17 @@
 import ctypes
 from libnacl import nacl
-from constants import *
+from libnacl.bindings.constants import (
+    crypto_box_PUBLICKEYBYTES,
+    crypto_box_SEEDBYTES,
+    crypto_box_SECRETKEYBYTES,
+    crypto_box_NONCEBYTES,
+    crypto_box_ZEROBYTES,
+    crypto_box_BEFORENMBYTES,
+    crypto_box_BOXZEROBYTES,
+    crypto_box_MACBYTES,
+    crypto_box_SEALBYTES,
+    HAS_SEAL,
+)
 from exceptions import CryptError
 
 #  Pubkey defs

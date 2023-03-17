@@ -1,6 +1,10 @@
 import ctypes
 from libnacl import nacl
-from constants import *
+from libnacl.bindings.constants import (
+    crypto_secretbox_KEYBYTES,
+    crypto_secretbox_NONCEBYTES,
+    crypto_secretbox_MACBYTES,
+)
 
 #  Authenticated Symmetric Encryption improved version
 

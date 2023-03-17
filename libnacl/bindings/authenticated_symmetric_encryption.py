@@ -1,6 +1,12 @@
 import ctypes
 from libnacl import nacl
-from constants import *
+from libnacl.bindings.constants import (
+    crypto_secretbox_KEYBYTES,
+    crypto_secretbox_NONCEBYTES,
+    crypto_secretbox_ZEROBYTES,
+    crypto_secretbox_BOXZEROBYTES,
+)
+
 #  Authenticated Symmetric Encryption
 
 
@@ -21,17 +27,16 @@ def crypto_secretbox(message, nonce, key):
         ValueError: if arguments' length is wrong or the operation has failed.
     """
     if len(key) != crypto_secretbox_KEYBYTES:
-        raise ValueError('Invalid key')
+        raise ValueError("Invalid key")
 
     if len(nonce) != crypto_secretbox_NONCEBYTES:
-        raise ValueError('Invalid nonce')
+        raise ValueError("Invalid nonce")
 
-    pad = b'\x00' * crypto_secretbox_ZEROBYTES + message
+    pad = b"\x00" * crypto_secretbox_ZEROBYTES + message
     ctxt = ctypes.create_string_buffer(len(pad))
-    ret = nacl.crypto_secretbox(
-        ctxt, pad, ctypes.c_ulonglong(len(pad)), nonce, key)
+    ret = nacl.crypto_secretbox(ctxt, pad, ctypes.c_ulonglong(len(pad)), nonce, key)
     if ret:
-        raise ValueError('Failed to encrypt message')
+        raise ValueError("Failed to encrypt message")
     return ctxt.raw[crypto_secretbox_BOXZEROBYTES:]
 
 
@@ -41,20 +46,14 @@ def crypto_secretbox_open(ctxt, nonce, key):
     public key
     """
     if len(key) != crypto_secretbox_KEYBYTES:
-        raise ValueError('Invalid key')
+        raise ValueError("Invalid key")
 
     if len(nonce) != crypto_secretbox_NONCEBYTES:
-        raise ValueError('Invalid nonce')
+        raise ValueError("Invalid nonce")
 
-    pad = b'\x00' * crypto_secretbox_BOXZEROBYTES + ctxt
+    pad = b"\x00" * crypto_secretbox_BOXZEROBYTES + ctxt
     msg = ctypes.create_string_buffer(len(pad))
-    ret = nacl.crypto_secretbox_open(
-            msg,
-            pad,
-            ctypes.c_ulonglong(len(pad)),
-            nonce,
-            key)
+    ret = nacl.crypto_secretbox_open(msg, pad, ctypes.c_ulonglong(len(pad)), nonce, key)
     if ret:
-        raise ValueError('Failed to decrypt message')
+        raise ValueError("Failed to decrypt message")
     return msg.raw[crypto_secretbox_ZEROBYTES:]
-
