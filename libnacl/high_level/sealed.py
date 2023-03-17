@@ -1,6 +1,8 @@
-import libnacl
+
 import libnacl.high_level.public
 import libnacl.high_level.dual
+import libnacl.bindings.pubkey_defs as pubkey_defs
+
 
 class SealedBox(object):
     '''
@@ -22,7 +24,7 @@ class SealedBox(object):
         '''
         Encrypt the given message using the receiver's public key
         '''
-        return libnacl.high_level.crypto_box_seal(msg, self.pk)
+        return pubkey_defs.crypto_box_seal(msg, self.pk)
 
     def decrypt(self, msg):
         '''
@@ -30,4 +32,4 @@ class SealedBox(object):
         '''
         if not self.sk:
             raise ValueError('Secret key is not set')
-        return libnacl.high_level.crypto_box_seal_open(msg, self.pk, self.sk)
+        return pubkey_defs.crypto_box_seal_open(msg, self.pk, self.sk)

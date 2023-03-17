@@ -10,17 +10,18 @@ NOTE:
 import binascii
 
 # Import libnacl libs
-import libnacl
+import libnacl.bindings.generic_hash as gh
 
 
 class Blake2b(object):
     '''
     Manage a Blake2b hash
     '''
+
     def __init__(self, msg, key=None):
         self.msg = msg
         self.key = key
-        self.raw_digest = libnacl.high_level.crypto_generichash(msg, key)
+        self.raw_digest = gh.crypto_generichash(msg, key)
         self.digest_size = len(self.raw_digest)
 
     def digest(self):

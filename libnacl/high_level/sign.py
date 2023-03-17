@@ -3,45 +3,52 @@
 High level routines to maintain signing keys and to sign and verify messages
 '''
 # Import libancl libs
-import libnacl
+
 import libnacl.high_level.base
 import libnacl.high_level.encode
+from libnacl.bindings.constants import crypto_sign_SEEDBYTES, crypto_sign_BYTES
+import libnacl.bindings.signing_functions as sf
+import libnacl.bindings.random_byte_generation as rbg
 
 
 class Signer(libnacl.high_level.base.BaseKey):
     '''
     The tools needed to sign messages
     '''
+
     def __init__(self, seed=None):
         '''
         Create a signing key, if not seed it supplied a keypair is generated
         '''
         if seed:
-            if len(seed) != libnacl.high_level.crypto_sign_SEEDBYTES:
+            if len(seed) != crypto_sign_SEEDBYTES:
                 raise ValueError('Invalid seed bytes')
-            self.vk, self.sk = libnacl.high_level.crypto_sign_seed_keypair(seed)
+            self.vk, self.sk = sf.crypto_sign_seed_keypair(seed)
         else:
-            seed = libnacl.high_level.randombytes(libnacl.high_level.crypto_sign_SEEDBYTES)
-            self.vk, self.sk = libnacl.high_level.crypto_sign_seed_keypair(seed)
+            seed = rbg.randombytes(
+                crypto_sign_SEEDBYTES)
+            self.vk, self.sk = sf.crypto_sign_seed_keypair(
+                seed)
         self.seed = seed
 
     def sign(self, msg):
         '''
         Sign the given message with this key
         '''
-        return libnacl.high_level.crypto_sign(msg, self.sk)
+        return sf.crypto_sign(msg, self.sk)
 
     def signature(self, msg):
         '''
         Return just the signature for the message
         '''
-        return libnacl.high_level.crypto_sign(msg, self.sk)[:libnacl.high_level.crypto_sign_BYTES]
+        return sf.crypto_sign(msg, self.sk)[:crypto_sign_BYTES]
 
 
 class Verifier(libnacl.high_level.base.BaseKey):
     '''
     Verify signed messages
     '''
+
     def __init__(self, vk_hex):
         '''
         Create a verification key from a hex encoded vkey
@@ -52,4 +59,4 @@ class Verifier(libnacl.high_level.base.BaseKey):
         '''
         Verify the message with tis key
         '''
-        return libnacl.high_level.crypto_sign_open(msg, self.vk)
+        return sf.crypto_sign_open(msg, self.vk)

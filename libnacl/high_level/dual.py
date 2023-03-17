@@ -3,7 +3,7 @@ The dual key system allows for the creation of keypairs that contain both
 cryptographic and signing keys
 '''
 # import libnacl libs
-import libnacl
+
 import libnacl.high_level.base
 import libnacl.high_level.public
 import libnacl.high_level.sign
@@ -13,6 +13,7 @@ class DualSecret(libnacl.high_level.base.BaseKey):
     '''
     Manage crypt and sign keys in one object
     '''
+
     def __init__(self, crypt=None, sign=None):
         self.crypt = libnacl.high_level.public.SecretKey(crypt)
         self.signer = libnacl.high_level.sign.Signer(sign)

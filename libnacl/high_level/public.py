@@ -3,19 +3,21 @@
 High level classes and routines around public key encryption and decryption
 '''
 # import libnacl libs
-import libnacl
 import libnacl.high_level.utils
 import libnacl.high_level.encode
 import libnacl.high_level.dual
 import libnacl.high_level.base
+from libnacl.bindings.constants import crypto_box_PUBLICKEYBYTES, crypto_box_SECRETKEYBYTES, crypto_box_NONCEBYTES
+import libnacl.bindings.pubkey_defs as pubkey_defs
 
 
 class PublicKey(libnacl.high_level.base.BaseKey):
     '''
     This class is used to manage public keys
     '''
+
     def __init__(self, pk):
-        if len(pk) == libnacl.high_level.crypto_box_PUBLICKEYBYTES:
+        if len(pk) == crypto_box_PUBLICKEYBYTES:
             self.pk = pk
         else:
             raise ValueError('Passed in invalid public key')
@@ -37,15 +39,16 @@ class SecretKey(libnacl.high_level.base.BaseKey):
     '''
     This class is used to manage keypairs
     '''
+
     def __init__(self, sk=None):
         '''
         If a secret key is not passed in then it will be generated
         '''
         if sk is None:
-            self.pk, self.sk = libnacl.high_level.crypto_box_keypair()
-        elif len(sk) == libnacl.high_level.crypto_box_SECRETKEYBYTES:
+            self.pk, self.sk = pubkey_defs.crypto_box_keypair()
+        elif len(sk) == crypto_box_SECRETKEYBYTES:
             self.sk = sk
-            self.pk = libnacl.high_level.crypto_scalarmult_base(sk)
+            self.pk = pubkey_defs.crypto_scalarmult_base(sk)
         else:
             raise ValueError('Passed in invalid secret key')
 
@@ -67,6 +70,7 @@ class Box(object):
     TheBox class is used to create cryptographic boxes and unpack
     cryptographic boxes
     '''
+
     def __init__(self, sk, pk):
         if isinstance(sk, (SecretKey, libnacl.high_level.dual.DualSecret)):
             sk = sk.sk
@@ -75,7 +79,7 @@ class Box(object):
         if isinstance(pk, PublicKey):
             pk = pk.pk
         if pk and sk:
-            self._k = libnacl.high_level.crypto_box_beforenm(pk, sk)
+            self._k = pubkey_defs.crypto_box_beforenm(pk, sk)
 
     def encrypt(self, msg, nonce=None, pack_nonce=True):
         '''
@@ -85,9 +89,9 @@ class Box(object):
         '''
         if nonce is None:
             nonce = libnacl.high_level.utils.rand_nonce()
-        elif len(nonce) != libnacl.high_level.crypto_box_NONCEBYTES:
+        elif len(nonce) != crypto_box_NONCEBYTES:
             raise ValueError('Invalid nonce size')
-        ctxt = libnacl.high_level.crypto_box_afternm(msg, nonce, self._k)
+        ctxt = pubkey_defs.crypto_box_afternm(msg, nonce, self._k)
         if pack_nonce:
             return nonce + ctxt
         else:
@@ -100,9 +104,9 @@ class Box(object):
         to the message
         '''
         if nonce is None:
-            nonce = ctxt[:libnacl.high_level.crypto_box_NONCEBYTES]
-            ctxt = ctxt[libnacl.high_level.crypto_box_NONCEBYTES:]
-        elif len(nonce) != libnacl.high_level.crypto_box_NONCEBYTES:
+            nonce = ctxt[:crypto_box_NONCEBYTES]
+            ctxt = ctxt[crypto_box_NONCEBYTES:]
+        elif len(nonce) != crypto_box_NONCEBYTES:
             raise ValueError('Invalid nonce')
-        msg = libnacl.high_level.crypto_box_open_afternm(ctxt, nonce, self._k)
+        msg = pubkey_defs.crypto_box_open_afternm(ctxt, nonce, self._k)
         return msg
