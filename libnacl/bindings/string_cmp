@@ -1,3 +1,5 @@
+from libnacl import nacl
+from constants import *
 #  String cmp
 
 
@@ -11,7 +13,8 @@ def crypto_verify_16(string1, string2):
     matching prefix of string1 and string2. This often allows for easy
     timing attacks.
     '''
-    a, b, c = (len(string1) >= 16), (len(string2) >= 16), (not nacl.crypto_verify_16(string1, string2))
+    a, b, c = (len(string1) >= 16), (len(string2) >=
+                                     16), (not nacl.crypto_verify_16(string1, string2))
     return a & b & c
 
 
@@ -25,7 +28,8 @@ def crypto_verify_32(string1, string2):
     matching prefix of string1 and string2. This often allows for easy
     timing attacks.
     '''
-    a, b, c = (len(string1) >= 32), (len(string2) >= 32), (not nacl.crypto_verify_32(string1, string2))
+    a, b, c = (len(string1) >= 32), (len(string2) >=
+                                     32), (not nacl.crypto_verify_32(string1, string2))
     return a & b & c
 
 
@@ -39,7 +43,8 @@ def crypto_verify_64(string1, string2):
     matching prefix of string1 and string2. This often allows for easy
     timing attacks.
     '''
-    a, b, c = (len(string1) >= 64), (len(string2) >= 64), (not nacl.crypto_verify_64(string1, string2))
+    a, b, c = (len(string1) >= 64), (len(string2) >=
+                                     64), (not nacl.crypto_verify_64(string1, string2))
     return a & b & c
 
 
@@ -63,4 +68,3 @@ def bytes_eq(a, b):
         return False
 
     return nacl.sodium_memcmp(a, b, len_a) == 0
-

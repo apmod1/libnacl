@@ -1,3 +1,6 @@
+import ctypes
+from libnacl import nacl, DOC_RUN
+
 if not DOC_RUN:
     sodium_init = nacl.sodium_init
     sodium_init.res_type = ctypes.c_int
