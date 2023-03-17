@@ -4,19 +4,19 @@ Utilities to make secret box encryption simple
 '''
 # Import libnacl
 import libnacl
-import libnacl.utils
-import libnacl.base
+import libnacl.high_level.utils
+import libnacl.high_level.base
 
 
-class AEAD(libnacl.base.BaseKey):
+class AEAD(libnacl.high_level.base.BaseKey):
     '''
     Manage AEAD encryption using the IETF ChaCha20-Poly1305(default) or AES-GCM algorithm
     '''
 
     def __init__(self, key=None):
         if key is None:
-            key = libnacl.utils.aead_key()
-        if len(key) != libnacl.crypto_aead_chacha20poly1305_ietf_KEYBYTES:  # same size for both
+            key = libnacl.high_level.utils.aead_key()
+        if len(key) != libnacl.high_level.crypto_aead_chacha20poly1305_ietf_KEYBYTES:  # same size for both
             raise ValueError('Invalid key')
         self.sk = key
         self.usingAES = False
@@ -31,13 +31,13 @@ class AEAD(libnacl.base.BaseKey):
         generated via the rand_nonce function
         '''
         if nonce is None:
-            nonce = libnacl.utils.rand_aead_nonce()
-        if len(nonce) != libnacl.crypto_aead_aes256gcm_NPUBBYTES:
+            nonce = libnacl.high_level.utils.rand_aead_nonce()
+        if len(nonce) != libnacl.high_level.crypto_aead_aes256gcm_NPUBBYTES:
             raise ValueError('Invalid nonce')
         if self.usingAES:
-            ctxt = libnacl.crypto_aead_aes256gcm_encrypt(msg, aad, nonce, self.sk)
+            ctxt = libnacl.high_level.crypto_aead_aes256gcm_encrypt(msg, aad, nonce, self.sk)
         else:
-            ctxt = libnacl.crypto_aead_chacha20poly1305_ietf_encrypt(msg, aad, nonce, self.sk)
+            ctxt = libnacl.high_level.crypto_aead_chacha20poly1305_ietf_encrypt(msg, aad, nonce, self.sk)
 
         if pack_nonce_aad:
             return aad + nonce + ctxt
@@ -50,21 +50,21 @@ class AEAD(libnacl.base.BaseKey):
         extracted from the message
         '''
         aad = ctxt[:aadLen]
-        nonce = ctxt[aadLen:aadLen+libnacl.crypto_aead_aes256gcm_NPUBBYTES]
-        ctxt = ctxt[aadLen+libnacl.crypto_aead_aes256gcm_NPUBBYTES:]
-        if len(nonce) != libnacl.crypto_aead_aes256gcm_NPUBBYTES:
+        nonce = ctxt[aadLen:aadLen+libnacl.high_level.crypto_aead_aes256gcm_NPUBBYTES]
+        ctxt = ctxt[aadLen+libnacl.high_level.crypto_aead_aes256gcm_NPUBBYTES:]
+        if len(nonce) != libnacl.high_level.crypto_aead_aes256gcm_NPUBBYTES:
             raise ValueError('Invalid nonce')
         if self.usingAES:
-            return libnacl.crypto_aead_aes256gcm_decrypt(ctxt, aad, nonce, self.sk)
-        return libnacl.crypto_aead_chacha20poly1305_ietf_decrypt(ctxt, aad, nonce, self.sk)
+            return libnacl.high_level.crypto_aead_aes256gcm_decrypt(ctxt, aad, nonce, self.sk)
+        return libnacl.high_level.crypto_aead_chacha20poly1305_ietf_decrypt(ctxt, aad, nonce, self.sk)
 
     def decrypt_unpacked(self, aad, nonce, ctxt):
         '''
         Decrypt the given message, if no nonce or aad are given they will be
         extracted from the message
         '''
-        if len(nonce) != libnacl.crypto_aead_aes256gcm_NPUBBYTES:
+        if len(nonce) != libnacl.high_level.crypto_aead_aes256gcm_NPUBBYTES:
             raise ValueError('Invalid nonce')
         if self.usingAES:
-            return libnacl.crypto_aead_aes256gcm_decrypt(ctxt, aad, nonce, self.sk)
-        return libnacl.crypto_aead_chacha20poly1305_ietf_decrypt(ctxt, aad, nonce, self.sk)
+            return libnacl.high_level.crypto_aead_aes256gcm_decrypt(ctxt, aad, nonce, self.sk)
+        return libnacl.high_level.crypto_aead_chacha20poly1305_ietf_decrypt(ctxt, aad, nonce, self.sk)

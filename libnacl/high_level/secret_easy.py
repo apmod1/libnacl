@@ -4,18 +4,18 @@ Utilities to make secret box easy encryption simple
 '''
 # Import libnacl
 import libnacl
-import libnacl.utils
-import libnacl.base
+import libnacl.high_level.utils
+import libnacl.high_level.base
 
 
-class SecretBoxEasy(libnacl.base.BaseKey):
+class SecretBoxEasy(libnacl.high_level.base.BaseKey):
     '''
     Manage symetric encryption using the salsa20 algorithm
     '''
     def __init__(self, key=None):
         if key is None:
-            key = libnacl.utils.salsa_key()
-        if len(key) != libnacl.crypto_secretbox_KEYBYTES:
+            key = libnacl.high_level.utils.salsa_key()
+        if len(key) != libnacl.high_level.crypto_secretbox_KEYBYTES:
             raise ValueError('Invalid key')
         self.sk = key
 
@@ -25,10 +25,10 @@ class SecretBoxEasy(libnacl.base.BaseKey):
         generated via the rand_nonce function
         '''
         if nonce is None:
-            nonce = libnacl.utils.rand_nonce()
-        if len(nonce) != libnacl.crypto_secretbox_NONCEBYTES:
+            nonce = libnacl.high_level.utils.rand_nonce()
+        if len(nonce) != libnacl.high_level.crypto_secretbox_NONCEBYTES:
             raise ValueError('Invalid nonce size')
-        ctxt = libnacl.crypto_secretbox_easy(msg, nonce, self.sk)
+        ctxt = libnacl.high_level.crypto_secretbox_easy(msg, nonce, self.sk)
         if pack_nonce:
             return nonce + ctxt
         else:
@@ -40,8 +40,8 @@ class SecretBoxEasy(libnacl.base.BaseKey):
         extracted from the message
         '''
         if nonce is None:
-            nonce = ctxt[:libnacl.crypto_secretbox_NONCEBYTES]
-            ctxt = ctxt[libnacl.crypto_secretbox_NONCEBYTES:]
-        if len(nonce) != libnacl.crypto_secretbox_NONCEBYTES:
+            nonce = ctxt[:libnacl.high_level.crypto_secretbox_NONCEBYTES]
+            ctxt = ctxt[libnacl.high_level.crypto_secretbox_NONCEBYTES:]
+        if len(nonce) != libnacl.high_level.crypto_secretbox_NONCEBYTES:
             raise ValueError('Invalid nonce')
-        return libnacl.crypto_secretbox_open_easy(ctxt, nonce, self.sk)
+        return libnacl.high_level.crypto_secretbox_open_easy(ctxt, nonce, self.sk)

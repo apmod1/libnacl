@@ -4,18 +4,18 @@ High level classes and routines around public key encryption and decryption
 '''
 # import libnacl libs
 import libnacl
-import libnacl.utils
-import libnacl.encode
-import libnacl.dual
-import libnacl.base
+import libnacl.high_level.utils
+import libnacl.high_level.encode
+import libnacl.high_level.dual
+import libnacl.high_level.base
 
 
-class PublicKey(libnacl.base.BaseKey):
+class PublicKey(libnacl.high_level.base.BaseKey):
     '''
     This class is used to manage public keys
     '''
     def __init__(self, pk):
-        if len(pk) == libnacl.crypto_box_PUBLICKEYBYTES:
+        if len(pk) == libnacl.high_level.crypto_box_PUBLICKEYBYTES:
             self.pk = pk
         else:
             raise ValueError('Passed in invalid public key')
@@ -33,7 +33,7 @@ class PublicKey(libnacl.base.BaseKey):
         return hash(self.pk)
 
 
-class SecretKey(libnacl.base.BaseKey):
+class SecretKey(libnacl.high_level.base.BaseKey):
     '''
     This class is used to manage keypairs
     '''
@@ -42,10 +42,10 @@ class SecretKey(libnacl.base.BaseKey):
         If a secret key is not passed in then it will be generated
         '''
         if sk is None:
-            self.pk, self.sk = libnacl.crypto_box_keypair()
-        elif len(sk) == libnacl.crypto_box_SECRETKEYBYTES:
+            self.pk, self.sk = libnacl.high_level.crypto_box_keypair()
+        elif len(sk) == libnacl.high_level.crypto_box_SECRETKEYBYTES:
             self.sk = sk
-            self.pk = libnacl.crypto_scalarmult_base(sk)
+            self.pk = libnacl.high_level.crypto_scalarmult_base(sk)
         else:
             raise ValueError('Passed in invalid secret key')
 
@@ -68,26 +68,26 @@ class Box(object):
     cryptographic boxes
     '''
     def __init__(self, sk, pk):
-        if isinstance(sk, (SecretKey, libnacl.dual.DualSecret)):
+        if isinstance(sk, (SecretKey, libnacl.high_level.dual.DualSecret)):
             sk = sk.sk
-        if isinstance(pk, (SecretKey, libnacl.dual.DualSecret)):
+        if isinstance(pk, (SecretKey, libnacl.high_level.dual.DualSecret)):
             raise ValueError('Passed in secret key as public key')
         if isinstance(pk, PublicKey):
             pk = pk.pk
         if pk and sk:
-            self._k = libnacl.crypto_box_beforenm(pk, sk)
+            self._k = libnacl.high_level.crypto_box_beforenm(pk, sk)
 
     def encrypt(self, msg, nonce=None, pack_nonce=True):
         '''
         Encrypt the given message with the given nonce, if the nonce is not
-        provided it will be generated from the libnacl.utils.rand_nonce
+        provided it will be generated from the libnacl.high_level.utils.rand_nonce
         function
         '''
         if nonce is None:
-            nonce = libnacl.utils.rand_nonce()
-        elif len(nonce) != libnacl.crypto_box_NONCEBYTES:
+            nonce = libnacl.high_level.utils.rand_nonce()
+        elif len(nonce) != libnacl.high_level.crypto_box_NONCEBYTES:
             raise ValueError('Invalid nonce size')
-        ctxt = libnacl.crypto_box_afternm(msg, nonce, self._k)
+        ctxt = libnacl.high_level.crypto_box_afternm(msg, nonce, self._k)
         if pack_nonce:
             return nonce + ctxt
         else:
@@ -100,9 +100,9 @@ class Box(object):
         to the message
         '''
         if nonce is None:
-            nonce = ctxt[:libnacl.crypto_box_NONCEBYTES]
-            ctxt = ctxt[libnacl.crypto_box_NONCEBYTES:]
-        elif len(nonce) != libnacl.crypto_box_NONCEBYTES:
+            nonce = ctxt[:libnacl.high_level.crypto_box_NONCEBYTES]
+            ctxt = ctxt[libnacl.high_level.crypto_box_NONCEBYTES:]
+        elif len(nonce) != libnacl.high_level.crypto_box_NONCEBYTES:
             raise ValueError('Invalid nonce')
-        msg = libnacl.crypto_box_open_afternm(ctxt, nonce, self._k)
+        msg = libnacl.high_level.crypto_box_open_afternm(ctxt, nonce, self._k)
         return msg
