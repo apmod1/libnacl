@@ -8,7 +8,7 @@ from libnacl.bindings.constants import (
     crypto_sign_ed25519_SECRETKEYBYTES,
     crypto_sign_SEEDBYTES,
 )
-from exceptions import CryptError
+from libnacl.bindings.exceptions import CryptError
 
 #  Signing functions
 
@@ -89,7 +89,8 @@ def crypto_sign_detached(msg, sk):
 
     sig = ctypes.create_string_buffer(crypto_sign_BYTES)
     slen = ctypes.pointer(ctypes.c_ulonglong())
-    ret = nacl.crypto_sign_detached(sig, slen, msg, ctypes.c_ulonglong(len(msg)), sk)
+    ret = nacl.crypto_sign_detached(
+        sig, slen, msg, ctypes.c_ulonglong(len(msg)), sk)
     if ret:
         raise ValueError("Failed to sign message")
     return sig.raw[: slen.contents.value]
@@ -121,7 +122,8 @@ def crypto_sign_open(sig, vk):
     msg = ctypes.create_string_buffer(len(sig))
     msglen = ctypes.c_ulonglong()
     msglenp = ctypes.pointer(msglen)
-    ret = nacl.crypto_sign_open(msg, msglenp, sig, ctypes.c_ulonglong(len(sig)), vk)
+    ret = nacl.crypto_sign_open(
+        msg, msglenp, sig, ctypes.c_ulonglong(len(sig)), vk)
     if ret:
         raise ValueError("Failed to validate message")
     return msg.raw[: msglen.value]
@@ -139,7 +141,8 @@ def crypto_sign_verify_detached(sig, msg, vk):
     if len(vk) != crypto_sign_PUBLICKEYBYTES:
         raise ValueError("Invalid public key")
 
-    ret = nacl.crypto_sign_verify_detached(sig, msg, ctypes.c_ulonglong(len(msg)), vk)
+    ret = nacl.crypto_sign_verify_detached(
+        sig, msg, ctypes.c_ulonglong(len(msg)), vk)
     if ret:
         raise ValueError("Failed to validate message")
     return msg

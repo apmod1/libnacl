@@ -12,7 +12,7 @@ from libnacl.bindings.constants import (
     crypto_box_SEALBYTES,
     HAS_SEAL,
 )
-from exceptions import CryptError
+from libnacl.bindings.exceptions import CryptError
 
 #  Pubkey defs
 
@@ -89,7 +89,8 @@ def crypto_box_open(ctxt, nonce, pk, sk):
         raise ValueError("Invalid nonce")
     pad = b"\x00" * crypto_box_BOXZEROBYTES + ctxt
     msg = ctypes.create_string_buffer(len(pad))
-    ret = nacl.crypto_box_open(msg, pad, ctypes.c_ulonglong(len(pad)), nonce, pk, sk)
+    ret = nacl.crypto_box_open(
+        msg, pad, ctypes.c_ulonglong(len(pad)), nonce, pk, sk)
     if ret:
         raise CryptError("Unable to decrypt ciphertext")
     return msg.raw[crypto_box_ZEROBYTES:]
@@ -126,7 +127,8 @@ def crypto_box_open_easy(ctxt, nonce, pk, sk):
     if len(nonce) != crypto_box_NONCEBYTES:
         raise ValueError("Invalid nonce")
     msg = ctypes.create_string_buffer(len(ctxt) - crypto_box_MACBYTES)
-    ret = nacl.crypto_box_open(msg, ctxt, ctypes.c_ulonglong(len(ctxt)), nonce, pk, sk)
+    ret = nacl.crypto_box_open(
+        msg, ctxt, ctypes.c_ulonglong(len(ctxt)), nonce, pk, sk)
     if ret:
         raise CryptError("Unable to decrypt ciphertext")
     return msg.raw[crypto_box_ZEROBYTES:]
@@ -157,7 +159,8 @@ def crypto_box_afternm(msg, nonce, k):
         raise ValueError("Invalid nonce")
     pad = b"\x00" * crypto_box_ZEROBYTES + msg
     ctxt = ctypes.create_string_buffer(len(pad))
-    ret = nacl.crypto_box_afternm(ctxt, pad, ctypes.c_ulonglong(len(pad)), nonce, k)
+    ret = nacl.crypto_box_afternm(
+        ctxt, pad, ctypes.c_ulonglong(len(pad)), nonce, k)
     if ret:
         raise CryptError("Unable to encrypt messsage")
     return ctxt.raw[crypto_box_BOXZEROBYTES:]
@@ -173,7 +176,8 @@ def crypto_box_open_afternm(ctxt, nonce, k):
         raise ValueError("Invalid nonce")
     pad = b"\x00" * crypto_box_BOXZEROBYTES + ctxt
     msg = ctypes.create_string_buffer(len(pad))
-    ret = nacl.crypto_box_open_afternm(msg, pad, ctypes.c_ulonglong(len(pad)), nonce, k)
+    ret = nacl.crypto_box_open_afternm(
+        msg, pad, ctypes.c_ulonglong(len(pad)), nonce, k)
     if ret:
         raise CryptError("unable to decrypt message")
     return msg.raw[crypto_box_ZEROBYTES:]
@@ -223,7 +227,8 @@ def crypto_box_seal(msg, pk):
     enc_msg = nacl.crypto_box_seal('secret message', <public key string>)
     """
     if not HAS_SEAL:
-        raise ValueError("Underlying Sodium library does not support sealed boxes")
+        raise ValueError(
+            "Underlying Sodium library does not support sealed boxes")
     if len(pk) != crypto_box_PUBLICKEYBYTES:
         raise ValueError("Invalid public key")
     if not isinstance(msg, bytes):
@@ -241,7 +246,8 @@ def crypto_box_seal_open(ctxt, pk, sk):
     Decrypts a message given the receiver's public and private key.
     """
     if not HAS_SEAL:
-        raise ValueError("Underlying Sodium library does not support sealed boxes")
+        raise ValueError(
+            "Underlying Sodium library does not support sealed boxes")
     if len(pk) != crypto_box_PUBLICKEYBYTES:
         raise ValueError("Invalid public key")
     if len(sk) != crypto_box_SECRETKEYBYTES:
@@ -250,7 +256,8 @@ def crypto_box_seal_open(ctxt, pk, sk):
         raise TypeError("Message must be bytes")
 
     c = ctypes.create_string_buffer(len(ctxt) - crypto_box_SEALBYTES)
-    ret = nacl.crypto_box_seal_open(c, ctxt, ctypes.c_ulonglong(len(ctxt)), pk, sk)
+    ret = nacl.crypto_box_seal_open(
+        c, ctxt, ctypes.c_ulonglong(len(ctxt)), pk, sk)
     if ret:
         raise CryptError("Unable to decrypt message")
     return c.raw
