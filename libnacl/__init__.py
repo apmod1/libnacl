@@ -36,7 +36,7 @@ def _get_nacl():
         try:
             libidx = __file__.find("lib")
             if libidx > 0:
-                libpath = __file__[0 : libidx + 3] + "/libsodium.dylib"
+                libpath = __file__[0: libidx + 3] + "/libsodium.dylib"
                 return ctypes.cdll.LoadLibrary(libpath)
         except OSError:
             msg = "Could not locate nacl lib, searched for libsodium"
@@ -53,7 +53,7 @@ def _get_nacl():
         try:
             libidx = __file__.find("lib")
             if libidx > 0:
-                libpath = __file__[0 : libidx + 3] + "/libsodium.so"
+                libpath = __file__[0: libidx + 3] + "/libsodium.so"
                 return ctypes.cdll.LoadLibrary(libpath)
         except OSError:
             pass
@@ -78,6 +78,7 @@ def _get_nacl():
 # Don't load libnacl if we are in sphinx
 if not "sphinx" in sys.argv[0]:
     nacl = _get_nacl()
+    print(nacl)
     DOC_RUN = False
 else:
     nacl = None
