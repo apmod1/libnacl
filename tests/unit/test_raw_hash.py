@@ -1,3 +1,6 @@
+# This notice is included to comply with the terms of the Apache License.
+# The code in this file was modified by Apurva Mody.
+
 # Import nacl libs
 import libnacl.bindings.hashing as hashing
 from libnacl.bindings.constants import crypto_hash_sha256_BYTES, crypto_hash_sha512_BYTES

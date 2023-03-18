@@ -1,3 +1,6 @@
+# This notice is included to comply with the terms of the Apache License.
+# The code in this file was modified by Apurva Mody.
+
 # -*- coding: utf-8 -*-
 '''
 Utilities to make secret box easy encryption simple

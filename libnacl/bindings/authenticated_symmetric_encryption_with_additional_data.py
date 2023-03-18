@@ -1,3 +1,7 @@
+# This notice is included to comply with the terms of the Apache License.
+# This file includes portions of code from the original forked __init__.py file.
+# The code was modified by Apurva Mody and subsequently placed in this file.
+
 import ctypes
 from libnacl import nacl
 from libnacl.bindings.constants import (
@@ -32,7 +36,8 @@ def crypto_aead_aes256gcm_encrypt(message, aad, nonce, key):
         ValueError: if arguments' length is wrong or the operation has failed.
     """
     if not HAS_AEAD_AES256GCM:
-        raise ValueError("Underlying Sodium library does not support AES256-GCM AEAD")
+        raise ValueError(
+            "Underlying Sodium library does not support AES256-GCM AEAD")
 
     if len(key) != crypto_aead_aes256gcm_KEYBYTES:
         raise ValueError("Invalid key")
@@ -112,7 +117,8 @@ def crypto_aead_aes256gcm_decrypt(ctxt, aad, nonce, key):
     or ciphertext were altered then the decryption will fail.
     """
     if not HAS_AEAD_AES256GCM:
-        raise ValueError("Underlying Sodium library does not support AES256-GCM AEAD")
+        raise ValueError(
+            "Underlying Sodium library does not support AES256-GCM AEAD")
 
     if len(key) != crypto_aead_aes256gcm_KEYBYTES:
         raise ValueError("Invalid key")

@@ -1,3 +1,7 @@
+# This notice is included to comply with the terms of the Apache License.
+# This file includes portions of code from the original forked __init__.py file.
+# The code was modified by Apurva Mody and subsequently placed in this file.
+
 import ctypes
 from libnacl import nacl
 from libnacl.bindings.constants import crypto_stream_KEYBYTES, crypto_stream_NONCEBYTES
@@ -35,7 +39,8 @@ def crypto_stream_xor(msg, nonce, key):
         raise ValueError("Invalid nonce")
 
     stream = ctypes.create_string_buffer(len(msg))
-    ret = nacl.crypto_stream_xor(stream, msg, ctypes.c_ulonglong(len(msg)), nonce, key)
+    ret = nacl.crypto_stream_xor(
+        stream, msg, ctypes.c_ulonglong(len(msg)), nonce, key)
     if ret:
         raise ValueError("Failed to init stream")
     return stream.raw

@@ -1,3 +1,9 @@
+
+# This notice is included to comply with the terms of the Apache License.
+# This file has been modified by Apurva Mody.
+# Some of the modified contents in this file can be found in the libnacl/bindings directory
+
+
 # -*- coding: utf-8 -*-
 """
 Wrap libsodium routines

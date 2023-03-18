@@ -1,3 +1,7 @@
+# This notice is included to comply with the terms of the Apache License.
+# This file includes portions of code from the original forked __init__.py file.
+# The code was modified by Apurva Mody and subsequently placed in this file.
+
 import ctypes
 from libnacl import nacl
 from libnacl.bindings.constants import (
@@ -40,7 +44,8 @@ def crypto_onetimeauth(message, key):
 
     tok = ctypes.create_string_buffer(crypto_onetimeauth_BYTES)
     #  cannot fail
-    _ = nacl.crypto_onetimeauth(tok, message, ctypes.c_ulonglong(len(message)), key)
+    _ = nacl.crypto_onetimeauth(
+        tok, message, ctypes.c_ulonglong(len(message)), key)
 
     return tok.raw[:crypto_onetimeauth_BYTES]
 

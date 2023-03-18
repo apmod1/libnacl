@@ -1,3 +1,6 @@
+# This notice is included to comply with the terms of the Apache License.
+# The code in this file was modified by Apurva Mody.
+
 # Import libnacl libs
 import libnacl.bindings.signing_functions as sf
 from libnacl.bindings.constants import crypto_sign_PUBLICKEYBYTES, crypto_sign_BYTES, crypto_sign_SECRETKEYBYTES

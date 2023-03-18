@@ -1,3 +1,7 @@
+# This notice is included to comply with the terms of the Apache License.
+# This file includes portions of code from the original forked __init__.py file.
+# The code was modified by Apurva Mody and subsequently placed in this file.
+
 import ctypes
 from libnacl import nacl
 from libnacl.bindings.constants import (
@@ -16,7 +20,8 @@ def crypto_kx_keypair():
     Generate and return a new keypair
     """
     if not HAS_CRYPT_KX:
-        raise ValueError("Underlying Sodium library does not support crypto_kx")
+        raise ValueError(
+            "Underlying Sodium library does not support crypto_kx")
     pk = ctypes.create_string_buffer(crypto_kx_PUBLICKEYBYTES)
     sk = ctypes.create_string_buffer(crypto_kx_SECRETKEYBYTES)
     nacl.crypto_kx_keypair(pk, sk)
@@ -28,7 +33,8 @@ def crypto_kx_seed_keypair(seed):
     Generate and return a keypair from a key seed
     """
     if not HAS_CRYPT_KX:
-        raise ValueError("Underlying Sodium library does not support crypto_kx")
+        raise ValueError(
+            "Underlying Sodium library does not support crypto_kx")
 
     if len(seed) != crypto_kx_SEEDBYTES:
         raise ValueError("Invalid key seed")
@@ -45,11 +51,13 @@ def crypto_kx_client_session_keys(client_pk, client_sk, server_pk):
     Status returns 0 on success, or -1 if the server's public key is not acceptable.
     """
     if not HAS_CRYPT_KX:
-        raise ValueError("Underlying Sodium library does not support crypto_kx")
+        raise ValueError(
+            "Underlying Sodium library does not support crypto_kx")
 
     rx = ctypes.create_string_buffer(crypto_kx_SESSIONKEYBYTES)
     tx = ctypes.create_string_buffer(crypto_kx_SESSIONKEYBYTES)
-    status = nacl.crypto_kx_client_session_keys(rx, tx, client_pk, client_sk, server_pk)
+    status = nacl.crypto_kx_client_session_keys(
+        rx, tx, client_pk, client_sk, server_pk)
     return rx.raw, tx.raw, status
 
 
@@ -60,9 +68,11 @@ def crypto_kx_server_session_keys(server_pk, server_sk, client_pk):
     Status returns 0 on success, or -1 if the client's public key is not acceptable.
     """
     if not HAS_CRYPT_KX:
-        raise ValueError("Underlying Sodium library does not support crypto_kx")
+        raise ValueError(
+            "Underlying Sodium library does not support crypto_kx")
 
     rx = ctypes.create_string_buffer(crypto_kx_SESSIONKEYBYTES)
     tx = ctypes.create_string_buffer(crypto_kx_SESSIONKEYBYTES)
-    status = nacl.crypto_kx_server_session_keys(rx, tx, server_pk, server_sk, client_pk)
+    status = nacl.crypto_kx_server_session_keys(
+        rx, tx, server_pk, server_sk, client_pk)
     return rx.raw, tx.raw, status

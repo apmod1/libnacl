@@ -1,3 +1,6 @@
+# This notice is included to comply with the terms of the Apache License.
+# The code in this file was modified by Apurva Mody.
+
 # -*- coding: utf-8 -*-
 '''
 Implement the base key object for other keys to inherit convenience functions
@@ -9,10 +12,12 @@ import libnacl.high_level.encode
 import os
 import stat
 
+
 class BaseKey(object):
     '''
     Include methods for key management convenience
     '''
+
     def hex_sk(self):
         if hasattr(self, 'sk'):
             return libnacl.high_level.encode.hex_encode(self.sk)

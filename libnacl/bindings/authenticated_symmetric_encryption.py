@@ -1,3 +1,7 @@
+# This notice is included to comply with the terms of the Apache License.
+# This file includes portions of code from the original forked __init__.py file.
+# The code was modified by Apurva Mody and subsequently placed in this file.
+
 import ctypes
 from libnacl import nacl
 from libnacl.bindings.constants import (
@@ -34,7 +38,8 @@ def crypto_secretbox(message, nonce, key):
 
     pad = b"\x00" * crypto_secretbox_ZEROBYTES + message
     ctxt = ctypes.create_string_buffer(len(pad))
-    ret = nacl.crypto_secretbox(ctxt, pad, ctypes.c_ulonglong(len(pad)), nonce, key)
+    ret = nacl.crypto_secretbox(
+        ctxt, pad, ctypes.c_ulonglong(len(pad)), nonce, key)
     if ret:
         raise ValueError("Failed to encrypt message")
     return ctxt.raw[crypto_secretbox_BOXZEROBYTES:]
@@ -53,7 +58,8 @@ def crypto_secretbox_open(ctxt, nonce, key):
 
     pad = b"\x00" * crypto_secretbox_BOXZEROBYTES + ctxt
     msg = ctypes.create_string_buffer(len(pad))
-    ret = nacl.crypto_secretbox_open(msg, pad, ctypes.c_ulonglong(len(pad)), nonce, key)
+    ret = nacl.crypto_secretbox_open(
+        msg, pad, ctypes.c_ulonglong(len(pad)), nonce, key)
     if ret:
         raise ValueError("Failed to decrypt message")
     return msg.raw[crypto_secretbox_ZEROBYTES:]
