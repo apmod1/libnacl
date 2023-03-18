@@ -24,13 +24,9 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Check libsodium version
-      run: |
-        sudo apt install libsodium-dev
-        gcc -Wall -W -o test_version.o test_version.c -lsodium 
-        ./test_version
     - name: Install dependencies
       run: |
+        sudo apt install libsodium-dev
         python -m pip install --upgrade pip
         python -m pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
@@ -40,6 +36,10 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Check libsodium version
+      run: |
+        gcc -Wall -W -o test_version.o test_version.c -lsodium 
+        ./test_version
     - name: Test with unit test
       run: |
         python tests/*
