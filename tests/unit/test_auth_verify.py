@@ -1,7 +1,13 @@
+# This notice is included to comply with the terms of the Apache License.
+# The code in this file was modified by Apurva Mody.
+
 # Import nacl libs
 import libnacl
-import libnacl.utils
-
+import libnacl.high_level.utils
+import libnacl.bindings.authentication as auth
+import libnacl.bindings.random_byte_generation as rbg
+import libnacl.bindings.one_time_authentication as otu
+from libnacl.bindings.constants import crypto_onetimeauth_KEYBYTES
 # Import python libs
 import unittest
 
@@ -10,58 +16,59 @@ class TestAuthVerify(unittest.TestCase):
     '''
     Test onetimeauth functions
     '''
+
     def test_auth_verify(self):
         msg = b'Anybody can invent a cryptosystem he cannot break himself. Except Bruce Schneier.'
-        key1 = libnacl.utils.salsa_key()
-        key2 = libnacl.utils.salsa_key()
+        key1 = libnacl.high_level.utils.salsa_key()
+        key2 = libnacl.high_level.utils.salsa_key()
 
-        sig1 = libnacl.crypto_auth(msg, key1)
-        sig2 = libnacl.crypto_auth(msg, key2)
+        sig1 = auth.crypto_auth(msg, key1)
+        sig2 = auth.crypto_auth(msg, key2)
 
-        self.assertTrue(libnacl.crypto_auth_verify(sig1, msg, key1))
-        self.assertTrue(libnacl.crypto_auth_verify(sig2, msg, key2))
+        self.assertTrue(auth.crypto_auth_verify(sig1, msg, key1))
+        self.assertTrue(auth.crypto_auth_verify(sig2, msg, key2))
         with self.assertRaises(ValueError) as context:
-            libnacl.crypto_auth_verify(sig1, msg, key2)
+            auth.crypto_auth_verify(sig1, msg, key2)
         self.assertTrue('Failed to auth msg' in context.exception.args)
 
         with self.assertRaises(ValueError) as context:
-            libnacl.crypto_auth_verify(sig2, msg, key1)
+            auth.crypto_auth_verify(sig2, msg, key1)
         self.assertTrue('Failed to auth msg' in context.exception.args)
 
     def test_onetimeauth_verify(self):
-        self.assertEqual("poly1305", libnacl.crypto_onetimeauth_primitive())
+        self.assertEqual("poly1305", otu.crypto_onetimeauth_primitive())
 
         msg = b'Anybody can invent a cryptosystem he cannot break himself. Except Bruce Schneier.'
-        key1 = libnacl.randombytes(libnacl.crypto_onetimeauth_KEYBYTES)
-        key2 = libnacl.randombytes(libnacl.crypto_onetimeauth_KEYBYTES)
+        key1 = rbg.randombytes(crypto_onetimeauth_KEYBYTES)
+        key2 = rbg.randombytes(crypto_onetimeauth_KEYBYTES)
 
-        sig1 = libnacl.crypto_onetimeauth(msg, key1)
-        sig2 = libnacl.crypto_onetimeauth(msg, key2)
-
-        with self.assertRaises(ValueError):
-            libnacl.crypto_onetimeauth(msg, b'too_short')
+        sig1 = otu.crypto_onetimeauth(msg, key1)
+        sig2 = otu.crypto_onetimeauth(msg, key2)
 
         with self.assertRaises(ValueError):
-            libnacl.crypto_onetimeauth_verify(sig1, msg, b'too_short')
+            otu.crypto_onetimeauth(msg, b'too_short')
 
         with self.assertRaises(ValueError):
-            libnacl.crypto_onetimeauth_verify(b'too_short', msg, key1)
+            otu.crypto_onetimeauth_verify(sig1, msg, b'too_short')
 
-        self.assertTrue(libnacl.crypto_onetimeauth_verify(sig1, msg, key1))
-        self.assertTrue(libnacl.crypto_onetimeauth_verify(sig2, msg, key2))
+        with self.assertRaises(ValueError):
+            otu.crypto_onetimeauth_verify(b'too_short', msg, key1)
+
+        self.assertTrue(otu.crypto_onetimeauth_verify(sig1, msg, key1))
+        self.assertTrue(otu.crypto_onetimeauth_verify(sig2, msg, key2))
         with self.assertRaises(ValueError) as context:
-            libnacl.crypto_onetimeauth_verify(sig1, msg, key2)
+            otu.crypto_onetimeauth_verify(sig1, msg, key2)
         self.assertTrue('Failed to auth message' in context.exception.args)
 
         with self.assertRaises(ValueError) as context:
-            libnacl.crypto_onetimeauth_verify(sig2, msg, key1)
+            otu.crypto_onetimeauth_verify(sig2, msg, key1)
         self.assertTrue('Failed to auth message' in context.exception.args)
 
     def test_auth_rejects_wrong_lengths(self):
         msg = b'Time is an illusion. Lunchtime doubly so.'
         for bad_key in (b'too short', b'too long' * 100):
             with self.assertRaises(ValueError) as context:
-                libnacl.crypto_auth(msg, bad_key)
+                auth.crypto_auth(msg, bad_key)
             self.assertEqual(context.exception.args, ('Invalid secret key',))
 
     def test_auth_verify_rejects_wrong_key_lengths(self):
@@ -71,19 +78,20 @@ class TestAuthVerify(unittest.TestCase):
 
         for bad_key in (b'too short', b'too long' * 100):
             with self.assertRaises(ValueError) as context:
-                libnacl.crypto_auth_verify(good_token, msg, bad_key)
+                auth.crypto_auth_verify(good_token, msg, bad_key)
             self.assertEqual(context.exception.args, ('Invalid secret key',))
 
         for bad_token in (b'too short', b'too long' * 100):
             with self.assertRaises(ValueError) as context:
-                libnacl.crypto_auth_verify(bad_token, msg, good_key)
-            self.assertEqual(context.exception.args, ('Invalid authenticator',))
+                auth.crypto_auth_verify(bad_token, msg, good_key)
+            self.assertEqual(context.exception.args,
+                             ('Invalid authenticator',))
 
     def test_onetimeauth_rejects_wrong_lengths(self):
         msg = b"Are the most dangerous creatures the ones that use doors or the ones that don't?"
         for bad_key in (b'too short', b'too long' * 100):
             with self.assertRaises(ValueError) as context:
-                libnacl.crypto_onetimeauth(msg, bad_key)
+                otu.crypto_onetimeauth(msg, bad_key)
             self.assertEqual(context.exception.args, ('Invalid secret key',))
 
     def test_onetimeauth_verify_rejects_wrong_key_lengths(self):
@@ -93,10 +101,11 @@ class TestAuthVerify(unittest.TestCase):
 
         for bad_key in (b'too short', b'too long' * 100):
             with self.assertRaises(ValueError) as context:
-                libnacl.crypto_onetimeauth_verify(good_token, msg, bad_key)
+                otu.crypto_onetimeauth_verify(good_token, msg, bad_key)
             self.assertEqual(context.exception.args, ('Invalid secret key',))
 
         for bad_token in (b'too short', b'too long' * 100):
             with self.assertRaises(ValueError) as context:
-                libnacl.crypto_onetimeauth_verify(bad_token, msg, good_key)
-            self.assertEqual(context.exception.args, ('Invalid authenticator',))
+                otu.crypto_onetimeauth_verify(bad_token, msg, good_key)
+            self.assertEqual(context.exception.args,
+                             ('Invalid authenticator',))

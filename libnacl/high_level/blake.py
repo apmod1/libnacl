@@ -1,3 +1,7 @@
+# This notice is included to comply with the terms of the Apache License.
+# The code in this file was modified by Apurva Mody.
+
+
 '''
 Mimic very closely the python hashlib classes for blake2b
 
@@ -10,17 +14,18 @@ NOTE:
 import binascii
 
 # Import libnacl libs
-import libnacl
+import libnacl.bindings.generic_hash as gh
 
 
 class Blake2b(object):
     '''
     Manage a Blake2b hash
     '''
+
     def __init__(self, msg, key=None):
         self.msg = msg
         self.key = key
-        self.raw_digest = libnacl.crypto_generichash(msg, key)
+        self.raw_digest = gh.crypto_generichash(msg, key)
         self.digest_size = len(self.raw_digest)
 
     def digest(self):

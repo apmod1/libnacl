@@ -1,21 +1,25 @@
+# This notice is included to comply with the terms of the Apache License.
+# The code in this file was modified by Apurva Mody.
+
 '''
 The dual key system allows for the creation of keypairs that contain both
 cryptographic and signing keys
 '''
 # import libnacl libs
-import libnacl
-import libnacl.base
-import libnacl.public
-import libnacl.sign
+
+import libnacl.high_level.base
+import libnacl.high_level.public
+import libnacl.high_level.sign
 
 
-class DualSecret(libnacl.base.BaseKey):
+class DualSecret(libnacl.high_level.base.BaseKey):
     '''
     Manage crypt and sign keys in one object
     '''
+
     def __init__(self, crypt=None, sign=None):
-        self.crypt = libnacl.public.SecretKey(crypt)
-        self.signer = libnacl.sign.Signer(sign)
+        self.crypt = libnacl.high_level.public.SecretKey(crypt)
+        self.signer = libnacl.high_level.sign.Signer(sign)
         self.sk = self.crypt.sk
         self.seed = self.signer.seed
         self.pk = self.crypt.pk

@@ -1,35 +1,40 @@
+# This notice is included to comply with the terms of the Apache License.
+# The code in this file was modified by Apurva Mody.
+
 # -*- coding: utf-8 -*-
 '''
 Implement the base key object for other keys to inherit convenience functions
 '''
 # Import libnacl libs
-import libnacl.encode
+import libnacl.high_level.encode
 
 # Import python libs
 import os
 import stat
 
+
 class BaseKey(object):
     '''
     Include methods for key management convenience
     '''
+
     def hex_sk(self):
         if hasattr(self, 'sk'):
-            return libnacl.encode.hex_encode(self.sk)
+            return libnacl.high_level.encode.hex_encode(self.sk)
         else:
             return ''
 
     def hex_pk(self):
         if hasattr(self, 'pk'):
-            return libnacl.encode.hex_encode(self.pk)
+            return libnacl.high_level.encode.hex_encode(self.pk)
 
     def hex_vk(self):
         if hasattr(self, 'vk'):
-            return libnacl.encode.hex_encode(self.vk)
+            return libnacl.high_level.encode.hex_encode(self.vk)
 
     def hex_seed(self):
         if hasattr(self, 'seed'):
-            return libnacl.encode.hex_encode(self.seed)
+            return libnacl.high_level.encode.hex_encode(self.seed)
 
     def for_json(self):
         '''
