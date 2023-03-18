@@ -2,8 +2,6 @@
 import libnacl.high_level.public
 import libnacl.high_level.dual
 import libnacl.high_level.sign
-from libnacl.bindings.constants import crypto_box_PUBLICKEYBYTES, crypto_box_SECRETKEYBYTES, crypto_box_NONCEBYTES
-import libnacl.bindings.pubkey_defs as pubkey_defs
 
 # Import python libs
 import unittest
