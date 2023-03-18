@@ -39,7 +39,7 @@ jobs:
     - name: Check libsodium version
       run: |
         gcc -Wall -W -o test_version.o test_version.c -lsodium 
-        ./test_version
+        ./test_version.o
     - name: Test with unit test
       run: |
         python tests/*
