@@ -26,6 +26,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Check libsodium version
       run: |
+        sudo apt install libsodium-dev
         gcc -Wall -W -o test_version.o test_version.c -lsodium 
         ./test_version
     - name: Install dependencies
